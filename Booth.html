@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Booth's Multiplication Algorithm </title>
+    <style>
+        body {
+            margin: 40px;
+        }
+
+        #view_style {
+            width: 500px;
+            padding: 10px;
+            border-width: 1px;
+            text-align: center;
+            border-style: dotted;
+            font-family: 'Times New Roman', Times, serif;
+            border-color: #000000;
+        }
+
+        #view_style h1 {
+            color: #ff9305;
+            font-weight: bold;
+            font-size: 150%;
+        }
+
+        #view_style table {
+            border: none;
+            width: 50%;
+            margin-left: 25%;
+            margin-right: 25%;
+            margin-bottom: 15px;
+            margin-top: 15px;
+        }
+
+        #view_style td {
+            padding: 10px;
+        }
+
+        #view_style .label {
+            font-weight: bold;
+            text-align: right;
+            width: 25%;
+        }
+
+        #view_style .field {
+            text-align: left;
+        }
+
+        #view_style button {
+            background-color: #000000;
+            border: none;
+            min-width: 20%;
+            padding: 5px;
+            margin: 5px;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        #view_style a {
+            color: #000000;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        #view_style a:hover {
+            color: #000000;
+        }
+
+        #output {
+            padding: 20px;
+        }
+        
+        #output .label {
+            width: 50%;
+        }
+        
+        #output table {
+        width: 80%;
+        margin-left: 15%;
+        margin-right: 15%;
+        }
+
+        #output .head {
+            width: 50%;
+            font-size: 125%;
+            font-weight: bold;
+            text-align: right;
+            color: #0d2ee9;
+        }
+    </style>
+    <script type="text/javascript">
+        window.a; window.b; window.bit; window.flag;
+        window.buf = [];
+        buf.length = 7;
+        window.steps = [];
+        function print(output) {
+            document.getElementById("output").innerHTML = output;
+        }
+
+        function errordisp(messages) {
+            var output = "Error Found Please try again:</br>";
+            for (i = 0; i < messages.length; i++) {
+                output += messages[i] + "<br/>";
+            }
+            print(output);
+        }
+
+        function tableview() {
+            var decbin;
+            if (flag == 1) {
+                decbin = "Binary";
+            } else {
+                decbin = "Decimal";
+            }
+            var t = "<table>";
+            var te = "</table>";
+            var tr = "<tr>";
+            var trn = "</tr><tr>";
+            var tre = "</tr>";
+            var td = "<td>";
+            var tdh = "<td class='head'>";
+            var tdl = "<td class='label'>";
+            var tdr = "<td class='field'>";
+            var tde = "</td>";
+            var tdn = "</td><td>";
+
+            var out1 = "<h1>Solution</h1>" + t;
+            var row11 = tr + tdl + "Input:" + tde + tdr + buf[0] + "-bit, " + decbin + tde + tre;
+
+            var row21 = tr + tdh + "Multiplicand- " + tdn + tde + trn;
+            var row22 = tdl + "Decimal:" + tde + tdr + buf[4] + tde + trn;
+            var row23 = tdl + "Binary:" + tde + tdr + buf[5] + tde + trn;
+            var row24 = tdl + "Two's Complement:" + tde + tdr + buf[6] + tde + tre;
+
+            var row31 = tr + tdh + "Multiplier - " + tdn + tde + trn;
+            var row32 = tdl + "Decimal:" + tde + tdr + buf[2] + tde + trn;
+            var row33 = tdl + "Binary:" + tde + tdr + buf[3] + tde + tre;
+
+            var row45 = tr + trn + tdh + "Steps - " + tdn + tde;
+
+            var rows15 = out1 + row11 + row21 + row22 + row23 + row24 + row31 + row32 + row33 + row45;
+
+            var p = 0;
+            var row6on = "";
+
+            while (p < steps.length) {
+                row6on += trn + tdl + steps[p] + tde + tdr + steps[p + 1] + tde;
+                p = p + 2;
+            }
+
+            var output = rows15 + row6on + tre + te;
+
+            print(output);
+        }
+
+        function decimalToBinary(decimal) {
+            var signBit;
+            var bin;
+            if (decimal < 0) {
+                signBit = 1;
+                decimal = Math.abs(decimal + 1);
+            } else {
+                signBit = 0;
+            }
+            bin = (decimal).toString(2);
+            while (bin.length < bit) {
+                bin = "0" + bin;
+            }
+            if (signBit == 1) {
+                bin = complement(bin);
+            }
+            return bin;
+        }
+
+        function complement(InBin) {
+            var OutBin = "";
+            var bin = "";
+            var i;
+            for (i in InBin) {
+                if (InBin[i] == "0") {
+                    OutBin += "1";
+                } else {
+                    OutBin += "0";
+                }
+            }
+            return OutBin;
+        }
+
+        function add_sub(prod, mltr) {
+            var nPro;
+            var Bit0 = bit - 1;
+            var upper = prod.substring(0, bit);
+            var add1 = parseInt(upper, 2);
+            var add2 = parseInt(mltr, 2);
+            var sum1 = add1 + add2;
+            var sum2 = decimalToBinary(sum1);
+            if (sum2.length > bit) {
+                nPro = sum2.slice(1) + prod.slice(bit);
+            } else {
+                nPro = sum2 + prod.slice(bit);
+            }
+            return nPro;
+        }
+
+        function algo() {
+            var i;
+            var mX = buf[3];
+            var mY = buf[5];
+            var prod = "";
+            var boothBit = 0;
+            var lastBit = bit + bit - 1;
+            var negmY = buf[6];
+            for (i = 0; i < bit; i++) {
+                prod += "0";
+            }
+            prod += mX;
+            steps.push("Starting Out: ");
+            steps.push(prod);
+            steps.push("Count: ");;
+            steps.push(bit);
+            steps.push("<br>");
+            steps.push("_________________________________");
+            var vbit = bit;
+            for (i = 0; i < bit; i++) {
+                var lastChar = prod.slice(-1);
+                if (lastChar > boothBit) {
+                    prod = add_sub(prod, negmY);
+                    steps.push("A-M : ");
+                    steps.push(prod);
+                } else if (lastChar < boothBit) {
+                    prod = add_sub(prod, mY)
+                    steps.push("A+M : ");
+                    steps.push(prod);
+                }
+
+                boothBit = lastChar;
+                prod = prod[0] + prod;
+                prod = prod.slice(0, -1);
+                steps.push("Shift: ");
+                steps.push(prod);
+                steps.push("Count: ");
+                vbit = bit - i -1;
+                steps.push(vbit);
+                steps.push("<br>");
+                steps.push("_________________________________");
+            }
+
+            steps.push("Answer (Binary): ");
+            steps.push(prod);
+            if (prod[0] == "1") {
+                var dec = parseInt(complement(prod), 2) + 1;
+                dec = 0 - dec;
+            } else {
+                var dec = parseInt(prod, 2);
+            }
+            steps.push("Answer (Decimal): ");
+            steps.push(dec);
+        }
+
+        function error_check() {
+            var e = bit - 1;
+            var max = Math.pow(2, e) - 1;
+            var min = -1 * Math.pow(2, e);
+            var errors = [];
+            if (flag == 1) {
+                errors.push("Please use decimal input");
+            } else {
+                buf[0] = bit;
+                buf[1] = flag;
+                buf[2] = a;
+                buf[4] = b;
+            }
+            
+            if (a < min || a > max || !Number.isInteger(a)) {
+                errors.push("Please check multiplicand field");
+            }
+            if (b < min || b > max || !Number.isInteger(b)) {
+                errors.push("Please check mltr field");
+            }
+            if (errors.length > 0) {
+                errordisp(errors);
+                return false;
+            } else if (flag == 0) {
+                buf[3] = decimalToBinary(a);
+                buf[5] = decimalToBinary(b);
+                buf[6] = decimalToBinary(-b);
+                return true;
+            } else{
+                return true;
+            }
+        }
+
+        function button_symbol() {
+            var input = document.getElementById("input_form").elements;
+            var inputy = input[0].value;
+            var inputx = input[1].value;
+            a = parseInt(inputx, 10);
+            b = parseInt(inputy, 10);
+            flag = 0;
+            bit = parseInt(input[2].value, 10);
+
+            if (error_check() == true) {
+                algo();
+                tableview();
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="view_style">
+        <h1>Booth's Multiplication</h1>
+        <form id="input_form">
+            <table>
+                <tr>
+                    <td class="label">Multiplicand (M):</td>
+                    <td class="field"><input type="text"></td>
+                </tr>
+                <tr>
+                    <td class="label">Multiplier (Q):</td>
+                    <td class="field"><input type="text"></td>
+                </tr>
+                <tr>
+                    <td class="label">Bits :</td>
+                    <td class="field"><input type="text"></td>
+                </tr>
+            </table>
+        </form>
+        <button onclick="button_symbol()">Submit</button>
+        <div id="output"></div>
+    </div>
+</body>
+
+</html>
