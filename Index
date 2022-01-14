@@ -1,0 +1,11 @@
+<HTML>
+    <HEAD>
+    <TITLE> Booth's Algorithm </TITLE>
+    </HEAD>
+    
+    <FRAMESET cols=100%>
+        <FRAME src="Booth.html" name="entry">
+        
+    </FRAMESET>
+    </HTML>
+    
